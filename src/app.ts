@@ -1,9 +1,21 @@
 import express from 'express';
-// rest of the code remains same
-const app = express();
-const PORT = 9000;
+import strongErrorHandler = require('strong-error-handler');
+import { json } from 'body-parser';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-app.get('/', (req, res) => res.send('Express + TypeScript Server'));
-app.listen(PORT, () => {
-  console.log(`Server is running at https://localhost:${PORT}`);
-});
+import { userRouterFactory } from './user/user.routes';
+import { postRouterFactory } from './like/like.routes';
+
+export const app = express();
+
+app.use(json());
+
+app.use(userRouterFactory());
+app.use(postRouterFactory());
+
+app.use(
+  strongErrorHandler({
+    debug: true,
+  }),
+);
