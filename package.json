@@ -17,7 +17,7 @@
     "prettier-watch:darwin:linux": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "test": "env-cmd -f ./test.env jest --detectOpenHandles --verbose",
-    "test:dev": "jest --watchAll"
+    "test:dev": "env-cmd -f ./test.env jest --detectOpenHandles --verbose--watchAll"
   },
   "husky": {
     "hooks": {

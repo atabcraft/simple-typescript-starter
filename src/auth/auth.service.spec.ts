@@ -4,8 +4,15 @@ import { AuthService } from './auth.service';
 const authService = new AuthService();
 authService.setupPassport();
 import '../sequelize';
+import { User } from '../user/user.model';
+import { Like } from '../like/like.model';
 
 const MOCKED_USER = { username: 'test123456', password: 'test132' };
+
+async function clearDatabase() {
+  await Like.destroy({ truncate: true, cascade: true });
+  return await User.destroy({ truncate: true, cascade: true });
+}
 
 describe('Sign up user POST /signup', () => {
   it('Valid request for signup should return user', async () => {
@@ -27,14 +34,15 @@ describe('Log in user POST /login', () => {
       .post('/login')
       .set('Content-Type', 'application/json')
       .send(MOCKED_USER)
-      .expect(res => {
+      .expect(async res => {
         expect(res.body.token).toBeDefined();
         expect(res.status).toEqual(200);
+        await clearDatabase();
       });
   });
 });
 
-describe('Forbitten login for user that does not exist user POST /login', () => {
+describe('Forbidden login for user that does not exist user POST /login', () => {
   it('Should not login user that  does not exists', async () => {
     const response = await request(app)
       .post('/login')
@@ -49,8 +57,8 @@ describe('Forbitten login for user that does not exist user POST /login', () => 
   });
 });
 
-describe('Unatuhorized login for user that does not provide correct password for user POST /login', () => {
-  it('Should not login user that  does not exists', async () => {
+describe('Unauthorized login for user that does not provide correct password for user POST /login', () => {
+  it('Should not login user with invalid credentials', async () => {
     const response = await request(app)
       .post('/login')
       .set('Content-Type', 'application/json')
@@ -59,8 +67,7 @@ describe('Unatuhorized login for user that does not provide correct password for
         password: 'whatever',
       })
       .expect(res => {
-        expect(res.body.err).toBeTruthy();
-        expect(res.status).toEqual(403);
+        expect(res.status).not.toEqual(200);
       });
   });
 });
