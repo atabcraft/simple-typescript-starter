@@ -1,22 +1,22 @@
 import { Router } from 'express';
 import { Like } from './like.model';
 
-export const postRouterFactory = () =>
+export const likeRouterFactory = () =>
   Router()
-    .get('/posts', (req, res, next) =>
+    .get('/like', (req, res, next) =>
       Like.findAll()
-        .then(posts => res.json(posts))
+        .then(likes => res.json(likes))
         .catch(next),
     )
 
-    .get('/posts/:id', (req, res, next) =>
+    .get('/like/:id', (req, res, next) =>
       Like.findByPk(req.params.id)
-        .then(post => (post ? res.json(post) : next({ statusCode: 404 })))
+        .then(like => (like ? res.json(like) : next({ statusCode: 404 })))
         .catch(next),
     )
 
-    .post('/posts', (req, res, next) =>
+    .post('/like', (req, res, next) =>
       Like.create(req.body)
-        .then(post => res.json(post))
+        .then(like => res.json(like))
         .catch(next),
     );

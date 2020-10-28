@@ -15,7 +15,7 @@ export class User extends Model<User> {
     type: DataType.STRING,
     allowNull: false,
   })
-  name!: string;
+  username!: string;
 
   @CreatedAt
   @Column
@@ -30,13 +30,6 @@ export class User extends Model<User> {
     allowNull: false,
   })
   password!: string;
-
-  @Column({
-    type: DataType.ENUM,
-    values: ['male', 'female'],
-    allowNull: false,
-  })
-  gender!: string;
 
   @HasMany(() => Like)
   likes!: Like[];

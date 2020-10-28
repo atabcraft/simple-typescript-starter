@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import passport from 'passport';
 import { Like } from '../like/like.model';
 
 import { User } from './user.model';
 
 export const userRouterFactory = () =>
   Router()
-    .get('/users', (req, res, next) =>
+    .get('/users', passport.authenticate('jwt'), (req, res, next) =>
       User.findAll({ include: [Like] })
         .then(users => res.json(users))
         .catch(next),
