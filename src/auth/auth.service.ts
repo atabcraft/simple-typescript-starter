@@ -62,11 +62,12 @@ export class AuthService {
       return res.status(400).send({});
     }
 
+    console.log(user);
     if (user) {
       return res.status(400).send({});
     }
 
-    const result = this.createUser(req.body.username, req.body.password);
+    const result = await this.createUser(req.body.username, req.body.password);
     res.status(201).send(result);
   }
 

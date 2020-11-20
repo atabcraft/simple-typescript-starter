@@ -7,7 +7,7 @@ export const authRouterFactory = () =>
   Router()
     .post('/signup', async (req, res, next) => {
       try {
-        authService.registerUser(req, res);
+        await authService.registerUser(req, res);
       } catch (error) {
         next({ statusCode: 400 });
       }

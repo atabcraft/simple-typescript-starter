@@ -7,14 +7,14 @@ import '../sequelize';
 import { User } from '../user/user.model';
 import { Like } from '../like/like.model';
 
-const MOCKED_USER = { username: 'test123456', password: 'test132' };
+const MOCKED_USER = { username: 'test1234567', password: 'test132' };
 
 async function clearDatabase() {
   await Like.destroy({ truncate: true, cascade: true });
   return await User.destroy({ truncate: true, cascade: true });
 }
 
-describe('Sign up user POST /signup', () => {
+describe('Sign up and login', () => {
   it('Valid request for signup should return user', async () => {
     const res = await request(app)
       .post('/signup')
@@ -39,24 +39,7 @@ describe('Sign up user POST /signup', () => {
         await clearDatabase();
       });
   });
-});
 
-describe('Forbidden login for user that does not exist user POST /login', () => {
-  it('Should not login user that  does not exists', async () => {
-    const response = await request(app)
-      .post('/login')
-      .set('Content-Type', 'application/json')
-      .send({
-        username: 'doesnotexist',
-        password: 'whatever',
-      })
-      .expect(res => {
-        expect(res.status).toEqual(401);
-      });
-  });
-});
-
-describe('Unauthorized login for user that does not provide correct password for user POST /login', () => {
   it('Should not login user with invalid credentials', async () => {
     const response = await request(app)
       .post('/login')
@@ -69,9 +52,20 @@ describe('Unauthorized login for user that does not provide correct password for
         expect(res.status).not.toEqual(200);
       });
   });
-});
 
-describe('Get authenticated user GET /me', () => {
+  it('Should not login user that  does not exists', async () => {
+    const response = await request(app)
+      .post('/login')
+      .set('Content-Type', 'application/json')
+      .send({
+        username: 'doesnotexist',
+        password: 'whatever',
+      })
+      .expect(res => {
+        expect(res.status).toEqual(401);
+      });
+  });
+
   it('Should login user that exists', async () => {
     const response = await request(app)
       .get('/me')
