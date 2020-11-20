@@ -26,10 +26,9 @@ describe('Sign up user POST /signup', () => {
         expect(res.status).toEqual(201);
       });
   });
-});
 
-describe('Log in user POST /login', () => {
   it('Should login user that exists', async () => {
+    await User.create(MOCKED_USER);
     const response = await request(app)
       .post('/login')
       .set('Content-Type', 'application/json')

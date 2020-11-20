@@ -1,4 +1,4 @@
-import passport from 'passport';
+import passport, { use } from 'passport';
 import passportLocal from 'passport-local';
 import passportJwt from 'passport-jwt';
 import { User } from '../user/user.model';
@@ -66,12 +66,21 @@ export class AuthService {
       return res.status(400).send({});
     }
 
-    const result = await User.create({
-      username: req.body.username,
-      password: this.hashPassword(req.body.password),
+    const result = this.createUser(req.body.username, req.body.password);
+    res.status(201).send(result);
+  }
+
+  createUser(
+    username: string,
+    password: string,
+  ): Promise<{ user: User; token: string }> {
+    return User.create({
+      username: username,
+      password: this.hashPassword(password),
+    }).then((user: User) => {
+      const token = this.generateAccessToken(user);
+      return { user, token };
     });
-    const token = this.generateAccessToken(result);
-    res.status(201).send({ token, user: result });
   }
 
   public async loginUser(req: Request, res: Response): Promise<any> {

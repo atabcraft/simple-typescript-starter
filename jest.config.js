@@ -8,4 +8,5 @@ module.exports = {
   roots: ['<rootDir>/src'],
   verbose: true,
   testTimeout: 15000,
+  runner: 'jest-serial-runner',
 };
