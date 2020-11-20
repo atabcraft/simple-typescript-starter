@@ -18,6 +18,9 @@ export class Like extends Model<Like> {
   @Column
   createdAt!: Date;
 
+  @Column
+  createdBy!: string;
+
   @UpdatedAt
   @Column
   updatedAt!: Date;
