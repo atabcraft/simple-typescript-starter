@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import passport from 'passport';
 import { AuthService } from './auth.service';
 
 const authService = new AuthService();
@@ -9,7 +8,7 @@ export const authRouterFactory = () =>
       try {
         await authService.registerUser(req, res);
       } catch (error) {
-        next({ statusCode: 400 });
+        next(error);
       }
     })
     .post('/login', async (req, res, next) => {
@@ -19,19 +18,15 @@ export const authRouterFactory = () =>
         }
         authService.loginUser(req, res);
       } catch (error) {
-        next({ statusCode: 403 });
+        next(error);
       }
     })
-    .get(
-      '/me',
-      passport.authenticate('jwt', { session: false }),
-      async (req, res, next) => {
-        try {
-          return res.status(200).send({
-            user: req.user,
-          });
-        } catch (error) {
-          next({ statusCode: 403 });
-        }
-      },
-    );
+    .get('/me', AuthService.authenticateWithJWT(), async (req, res, next) => {
+      try {
+        return res.status(200).send({
+          user: req.user,
+        });
+      } catch (error) {
+        next(error);
+      }
+    });

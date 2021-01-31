@@ -1,21 +1,30 @@
 import request from 'supertest';
-import { app } from '../app';
 import { AuthService } from './auth.service';
 const authService = new AuthService();
 authService.setupPassport();
+import { app } from '../app';
 import '../sequelize';
 import { User } from '../user/user.model';
-import { Like } from '../like/like.model';
 
 const MOCKED_USER = { username: 'test1234567', password: 'test132' };
 
+let userResult: { user: User; token: string };
+
 async function clearDatabase() {
-  await Like.destroy({ truncate: true, cascade: true });
   return await User.destroy({ truncate: true, cascade: true });
 }
 
 describe('Sign up and login', () => {
+  beforeEach(async () => {
+    userResult = await authService.createUser(
+      MOCKED_USER.username,
+      MOCKED_USER.password,
+    );
+  });
+
+  afterEach(async () => await clearDatabase());
   it('Valid request for signup should return user', async () => {
+    await clearDatabase();
     const res = await request(app)
       .post('/signup')
       .set('Content-Type', 'application/json')
@@ -28,7 +37,6 @@ describe('Sign up and login', () => {
   });
 
   it('Should login user that exists', async () => {
-    await User.create(MOCKED_USER);
     const response = await request(app)
       .post('/login')
       .set('Content-Type', 'application/json')
@@ -36,7 +44,6 @@ describe('Sign up and login', () => {
       .expect(async res => {
         expect(res.body.token).toBeDefined();
         expect(res.status).toEqual(200);
-        await clearDatabase();
       });
   });
 
@@ -70,10 +77,7 @@ describe('Sign up and login', () => {
     const response = await request(app)
       .get('/me')
       .set('Content-Type', 'application/json')
-      .set(
-        'Authorization',
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjM0IiwiaWF0IjoxNjAzODgxMjMwfQ.Drxa_8EzPkJ4aOm386i6A2ukGgaWcR1qHvcY_j_AR7U',
-      )
+      .set('Authorization', 'Bearer ' + userResult.token)
       .send()
       .expect(res => {
         expect(res.body.user).toBeDefined();

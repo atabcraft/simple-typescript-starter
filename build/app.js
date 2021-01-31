@@ -33,7 +33,10 @@ const user_routes_1 = require("./user/user.routes");
 const like_routes_1 = require("./like/like.routes");
 const auth_routes_1 = require("./auth/auth.routes");
 const passport = require("passport");
+const auth_service_1 = require("./auth/auth.service");
 exports.app = express_1.default();
+const authService = new auth_service_1.AuthService();
+authService.setupPassport();
 exports.app.use(body_parser_1.json());
 if (process.env.NODE_ENV != 'DEVELOPMENT') {
     exports.app.use(cors_1.default());

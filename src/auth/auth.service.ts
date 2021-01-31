@@ -1,4 +1,4 @@
-import passport, { use } from 'passport';
+import passport from 'passport';
 import passportLocal from 'passport-local';
 import passportJwt from 'passport-jwt';
 import { User } from '../user/user.model';
@@ -61,8 +61,6 @@ export class AuthService {
     } catch (error) {
       return res.status(400).send({});
     }
-
-    console.log(user);
     if (user) {
       return res.status(400).send({});
     }
@@ -102,10 +100,17 @@ export class AuthService {
   }
 
   private generateAccessToken(user: User) {
-    return jwt.sign({ username: user.username }, String(process.env.JWTKEY));
+    return jwt.sign(
+      { username: user.username, id: user.id },
+      String(process.env.JWTKEY),
+    );
   }
 
   private hashPassword(password: string): string {
     return bcrypt.hashSync(password);
+  }
+
+  public static authenticateWithJWT() {
+    return passport.authenticate('jwt', { session: false });
   }
 }

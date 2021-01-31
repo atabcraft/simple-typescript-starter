@@ -9,9 +9,11 @@ import { userRouterFactory } from './user/user.routes';
 import { likeRouterFactory } from './like/like.routes';
 import { authRouterFactory } from './auth/auth.routes';
 import passport = require('passport');
+import { AuthService } from './auth/auth.service';
 
 export const app = express();
-
+const authService = new AuthService();
+authService.setupPassport();
 app.use(json());
 if (process.env.NODE_ENV != 'DEVELOPMENT') {
   app.use(cors());
